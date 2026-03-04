@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Forex Quotes",
+  "version": "1.0",
+  "description": "Get live forex exchange rates with daily updates",
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://api.exchangerate-api.com/*",
+    "https://api.coingecko.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon_16.svg",
+      "48": "icons/icon_48.svg",
+      "128": "icons/icon_128.svg"
+    },
+    "default_title": "Forex Quotes"
+  },
+  "icons": {
+    "16": "icons/icon_16.svg",
+    "48": "icons/icon_48.svg",
+    "128": "icons/icon_128.svg"
+  }
+}
