@@ -6,12 +6,8 @@ A lightweight Chrome extension that fetches live forex exchange rates daily and 
 
 - **Daily Auto-Updates**: Fetches currency quotes once per day automatically
 - **Icon Badge**: Shows EURUSD exchange rate on the extension icon
-- **Quick Popup**: Click the icon to view all tracked currencies:
-  - EURUSD (Euro to US Dollar)
-  - EURRUB (Euro to Russian Ruble)  
-  - USDRUB (US Dollar to Russian Ruble)
-  - CADRUB (Canadian Dollar to Russian Ruble)
-  - BTCUSD (Bitcoin to US Dollar)
+- **Quick Popup**: Click the icon to view all tracked currencies
+- **Configurable Currencies**: Choose which currencies to track via settings page
 - **Manual Refresh**: Button to refresh quotes on demand
 - **Timestamps**: Shows when quotes were last updated
 
@@ -24,6 +20,9 @@ Quotes/
 ├── popup.html          # Popup UI
 ├── popup.js            # Popup logic
 ├── popup.css           # Popup styling
+├── options.html        # Settings page
+├── options.js          # Settings logic
+├── options.css         # Settings styling
 ├── icons/
 │   ├── icon_16.svg
 │   ├── icon_48.svg
@@ -56,6 +55,27 @@ Quotes/
 - **First Load**: Quotes are fetched immediately when extension is installed
 - **Storage**: Quotes are stored in Chrome's local storage with timestamps
 - **Badge**: The EURUSD value is always displayed on the extension icon
+
+## Available Currencies
+
+By default, the extension tracks these 5 currency pairs:
+- **EURUSD** - Euro to US Dollar
+- **EURRUB** - Euro to Russian Ruble
+- **USDRUB** - US Dollar to Russian Ruble
+- **CADRUB** - Canadian Dollar to Russian Ruble
+- **BTCUSD** - Bitcoin to US Dollar
+
+Additional currencies available to enable in settings:
+- **GBPUSD** - British Pound to US Dollar
+- **JPYUSD** - Japanese Yen to US Dollar
+- **AUDUSD** - Australian Dollar to US Dollar
+
+**Configure Currencies:**
+1. Right-click the extension icon
+2. Select "Options" or click the ⚙️ Settings button in the popup
+3. Check/uncheck currencies to customize your selection
+4. Click "Save Settings"
+5. Quotes will refresh immediately with your new selection
 
 ## Permissions
 

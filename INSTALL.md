@@ -13,7 +13,7 @@
 ### Step 2: First Use
 1. Click the extension icon in your Chrome toolbar
 2. Click **"Refresh Now"** to fetch quotes
-3. You'll see quotes for:
+3. You'll see quotes for the default currencies:
    - EURUSD (Euro to Dollar)
    - EURRUB (Euro to Russian Ruble)
    - USDRUB (Dollar to Russian Ruble)
@@ -22,6 +22,15 @@
 
 ### Step 3: Watch the Badge
 The extension icon will display the current **EURUSD** rate directly on the icon badge (in green).
+
+### Step 4: Customize Currencies (Optional)
+1. Click the extension icon popup
+2. Click the **⚙️ Settings** button
+3. Select/deselect currencies to customize your tracked pairs:
+   - Default pairs: EURUSD, EURRUB, USDRUB, CADRUB, BTCUSD
+   - Optional pairs: GBPUSD, JPYUSD, AUDUSD
+4. Click **"Save Settings"**
+5. Quotes will refresh with your new selection!
 
 ## How It Works
 

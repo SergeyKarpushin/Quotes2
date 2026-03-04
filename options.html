@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forex Quotes Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Forex Quotes Settings</h1>
+    
+    <section class="settings-section">
+      <h2>Select Currencies to Track</h2>
+      <p class="section-description">Choose which currency pairs you want to monitor:</p>
+      
+      <div class="currencies-grid" id="currenciesGrid">
+        <!-- Currency checkboxes will be generated here -->
+      </div>
+      
+      <div class="button-group">
+        <button id="saveBtn" class="btn btn-primary">Save Settings</button>
+        <button id="resetBtn" class="btn btn-secondary">Reset to Default</button>
+      </div>
+      
+      <div id="message" class="message"></div>
+    </section>
+
+    <section class="settings-section">
+      <h2>Update Schedule</h2>
+      <p class="section-description">Quotes are currently set to update automatically every 24 hours.</p>
+      <p class="info-text">Press "Refresh Now" in the popup to fetch updated quotes manually anytime.</p>
+    </section>
+
+    <section class="settings-section">
+      <h2>About</h2>
+      <p class="section-description">Forex Quotes v1.0</p>
+      <p class="info-text">This extension fetches live exchange rates from free APIs (ExchangeRate-API and CoinGecko). Data is stored locally in your browser. No personal information is collected.</p>
+    </section>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

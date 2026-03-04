@@ -1,42 +1,45 @@
 // Display quotes in popup
 function displayQuotes() {
   chrome.storage.local.get(['quotes', 'timestamp'], (result) => {
-    const quotesList = document.getElementById('quotesList');
-    const timestampEl = document.getElementById('timestamp');
-    
-    if (result.quotes && Object.keys(result.quotes).length > 0) {
-      // Build HTML for quotes
-      let html = '';
-      const currencyOrder = ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD'];
+    chrome.storage.sync.get(['selectedCurrencies'], (syncResult) => {
+      const quotesList = document.getElementById('quotesList');
+      const timestampEl = document.getElementById('timestamp');
       
-      for (const pair of currencyOrder) {
-        if (result.quotes[pair]) {
-          const value = result.quotes[pair].toFixed(4);
-          html += `
-            <div class="quote-item">
-              <span class="quote-pair">${pair}</span>
-              <span class="quote-value">${value}</span>
-            </div>
-          `;
+      const selectedCurrencies = syncResult.selectedCurrencies || ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD'];
+      
+      if (result.quotes && Object.keys(result.quotes).length > 0) {
+        // Build HTML for quotes in order of selected currencies
+        let html = '';
+        
+        for (const pair of selectedCurrencies) {
+          if (result.quotes[pair]) {
+            const value = result.quotes[pair].toFixed(4);
+            html += `
+              <div class="quote-item">
+                <span class="quote-pair">${pair}</span>
+                <span class="quote-value">${value}</span>
+              </div>
+            `;
+          }
         }
-      }
-      
-      if (html) {
-        quotesList.innerHTML = html;
+        
+        if (html) {
+          quotesList.innerHTML = html;
+        } else {
+          quotesList.innerHTML = '<p class="error">No quotes available. Click Refresh to fetch.</p>';
+        }
+        
+        // Update timestamp
+        if (result.timestamp) {
+          const date = new Date(result.timestamp);
+          const timeStr = date.toLocaleTimeString();
+          const dateStr = date.toLocaleDateString();
+          timestampEl.textContent = `Last updated: ${dateStr} ${timeStr}`;
+        }
       } else {
-        quotesList.innerHTML = '<p class="error">No quotes available. Click Refresh to fetch.</p>';
+        quotesList.innerHTML = '<p class="loading">No data available. Click Refresh to fetch.</p>';
       }
-      
-      // Update timestamp
-      if (result.timestamp) {
-        const date = new Date(result.timestamp);
-        const timeStr = date.toLocaleTimeString();
-        const dateStr = date.toLocaleDateString();
-        timestampEl.textContent = `Last updated: ${dateStr} ${timeStr}`;
-      }
-    } else {
-      quotesList.innerHTML = '<p class="loading">No data available. Click Refresh to fetch.</p>';
-    }
+    });
   });
 }
 

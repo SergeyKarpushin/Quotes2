@@ -1,5 +1,5 @@
-// Currency pairs to track
-const CURRENCIES = ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD'];
+// Currency pairs to track - defaults
+const DEFAULT_CURRENCIES = ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD'];
 
 // Alarm name for daily updates
 const ALARM_NAME = 'dailyQuoteUpdate';
@@ -24,6 +24,10 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 // Fetch quotes from exchangerate-api.com
 async function fetchQuotes() {
   try {
+    // Get selected currencies from storage
+    const result = await chrome.storage.sync.get(['selectedCurrencies']);
+    let selectedCurrencies = result.selectedCurrencies || DEFAULT_CURRENCIES;
+    
     const quotes = {};
     
     // Helper function to convert currency pair to API calls
@@ -39,25 +43,34 @@ async function fetchQuotes() {
       }
     }
 
-    // For EURUSD: EUR -> USD
-    const eurusd = await getRate('EUR', 'USD');
-    if (eurusd) quotes['EURUSD'] = eurusd;
-
-    // For EURRUB: EUR -> RUB
-    const eurrub = await getRate('EUR', 'RUB');
-    if (eurrub) quotes['EURRUB'] = eurrub;
-
-    // For USDRUB: USD -> RUB
-    const usdrub = await getRate('USD', 'RUB');
-    if (usdrub) quotes['USDRUB'] = usdrub;
-
-    // For CADRUB: CAD -> RUB
-    const cadrub = await getRate('CAD', 'RUB');
-    if (cadrub) quotes['CADRUB'] = cadrub;
-
-    // For BTCUSD: BTC -> USD (using alternate API since exchangerate-api might not have crypto)
-    const btcusd = await fetchBitcoinPrice();
-    if (btcusd) quotes['BTCUSD'] = btcusd;
+    // Map each selected currency to its fetch logic
+    for (const pair of selectedCurrencies) {
+      if (pair === 'EURUSD') {
+        const rate = await getRate('EUR', 'USD');
+        if (rate) quotes[pair] = rate;
+      } else if (pair === 'EURRUB') {
+        const rate = await getRate('EUR', 'RUB');
+        if (rate) quotes[pair] = rate;
+      } else if (pair === 'USDRUB') {
+        const rate = await getRate('USD', 'RUB');
+        if (rate) quotes[pair] = rate;
+      } else if (pair === 'CADRUB') {
+        const rate = await getRate('CAD', 'RUB');
+        if (rate) quotes[pair] = rate;
+      } else if (pair === 'BTCUSD') {
+        const rate = await fetchBitcoinPrice();
+        if (rate) quotes[pair] = rate;
+      } else if (pair === 'GBPUSD') {
+        const rate = await getRate('GBP', 'USD');
+        if (rate) quotes[pair] = rate;
+      } else if (pair === 'JPYUSD') {
+        const rate = await getRate('JPY', 'USD');
+        if (rate) quotes[pair] = rate;
+      } else if (pair === 'AUDUSD') {
+        const rate = await getRate('AUD', 'USD');
+        if (rate) quotes[pair] = rate;
+      }
+    }
 
     // Save to storage with timestamp
     const data = {
@@ -97,9 +110,13 @@ function updateBadge(quotes) {
   }
 }
 
-// Handle messages from popup
+// Handle messages from popup and options
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'fetchQuotes') {
+    fetchQuotes();
+    sendResponse({ status: 'fetching' });
+  } else if (request.action === 'settingsChanged') {
+    // Refresh quotes immediately when settings change
     fetchQuotes();
     sendResponse({ status: 'fetching' });
   }
