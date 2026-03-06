@@ -5,7 +5,8 @@
   "description": "Get live forex exchange rates with daily updates",
   "permissions": [
     "storage",
-    "alarms"
+    "alarms",
+    "tabs"
   ],
   "host_permissions": [
     "https://api.exchangerate-api.com/*",

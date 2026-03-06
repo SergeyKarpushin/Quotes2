@@ -25,6 +25,18 @@ function displayQuotes() {
         
         if (html) {
           quotesList.innerHTML = html;
+          
+          // Add click listeners to quote pairs
+          document.querySelectorAll('.quote-pair').forEach(el => {
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', () => {
+              const pair = el.textContent;
+              const base = pair.slice(0, 3).toLowerCase();
+              const quote = pair.slice(3).toLowerCase();
+              const url = `https://www.investing.com/currencies/${base}-${quote}`;
+              chrome.tabs.create({ url });
+            });
+          });
         } else {
           quotesList.innerHTML = '<p class="error">No quotes available. Click Refresh to fetch.</p>';
         }
