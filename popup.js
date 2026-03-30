@@ -1,3 +1,21 @@
+function formatQuoteValue(pair, value) {
+  if (pair === 'BTCUSD' || pair === 'BRENTUSD') {
+    return value.toFixed(2);
+  }
+
+  return value.toFixed(4);
+}
+
+function getDetailsUrl(pair) {
+  if (pair === 'BRENTUSD') {
+    return 'https://www.investing.com/commodities/brent-oil';
+  }
+
+  const base = pair.slice(0, 3).toLowerCase();
+  const quote = pair.slice(3).toLowerCase();
+  return `https://www.investing.com/currencies/${base}-${quote}`;
+}
+
 // Display quotes in popup
 function displayQuotes() {
   chrome.storage.local.get(['quotes', 'timestamp'], (result) => {
@@ -5,15 +23,14 @@ function displayQuotes() {
       const quotesList = document.getElementById('quotesList');
       const timestampEl = document.getElementById('timestamp');
       
-      const selectedCurrencies = syncResult.selectedCurrencies || ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD'];
+      const selectedCurrencies = syncResult.selectedCurrencies || ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD', 'BRENTUSD'];
       
       if (result.quotes && Object.keys(result.quotes).length > 0) {
-        // Build HTML for quotes in order of selected currencies
         let html = '';
         
         for (const pair of selectedCurrencies) {
           if (result.quotes[pair]) {
-            const value = result.quotes[pair].toFixed(4);
+            const value = formatQuoteValue(pair, result.quotes[pair]);
             html += `
               <div class="quote-item">
                 <span class="quote-pair">${pair}</span>
@@ -26,15 +43,11 @@ function displayQuotes() {
         if (html) {
           quotesList.innerHTML = html;
           
-          // Add click listeners to quote pairs
           document.querySelectorAll('.quote-pair').forEach(el => {
             el.style.cursor = 'pointer';
             el.addEventListener('click', () => {
               const pair = el.textContent;
-              const base = pair.slice(0, 3).toLowerCase();
-              const quote = pair.slice(3).toLowerCase();
-              const url = `https://www.investing.com/currencies/${base}-${quote}`;
-              chrome.tabs.create({ url });
+              chrome.tabs.create({ url: getDetailsUrl(pair) });
             });
           });
         } else {

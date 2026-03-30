@@ -10,7 +10,8 @@
   ],
   "host_permissions": [
     "https://api.exchangerate-api.com/*",
-    "https://api.coingecko.com/*"
+    "https://api.coingecko.com/*",
+    "https://query1.finance.yahoo.com/*"
   ],
   "background": {
     "service_worker": "background.js"

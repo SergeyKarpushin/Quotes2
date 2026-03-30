@@ -1,5 +1,5 @@
 // Currency pairs to track - defaults
-const DEFAULT_CURRENCIES = ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD'];
+const DEFAULT_CURRENCIES = ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD', 'BRENTUSD'];
 
 // Alarm name for daily updates
 const ALARM_NAME = 'dailyQuoteUpdate';
@@ -56,6 +56,9 @@ async function fetchQuotes() {
       } else if (pair === 'BTCUSD') {
         const rate = await fetchBitcoinPrice();
         if (rate) quotes[pair] = rate;
+      } else if (pair === 'BRENTUSD') {
+        const rate = await fetchBrentOilPrice();
+        if (rate) quotes[pair] = rate;
       } else if (pair === 'GBPUSD') {
         const rate = await getRate('GBP', 'USD');
         if (rate) quotes[pair] = rate;
@@ -93,6 +96,19 @@ async function fetchBitcoinPrice() {
     return data.bitcoin?.usd || null;
   } catch (error) {
     console.error('Error fetching Bitcoin price:', error);
+    return null;
+  }
+}
+
+// Fetch Brent oil price from Yahoo Finance
+async function fetchBrentOilPrice() {
+  try {
+    const response = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=1d');
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+    return data.chart?.result?.[0]?.meta?.regularMarketPrice || null;
+  } catch (error) {
+    console.error('Error fetching Brent oil price:', error);
     return null;
   }
 }

@@ -5,6 +5,7 @@ const AVAILABLE_CURRENCIES = [
   { name: 'USDRUB', label: 'US Dollar to Russian Ruble', default: true },
   { name: 'CADRUB', label: 'Canadian Dollar to Russian Ruble', default: true },
   { name: 'BTCUSD', label: 'Bitcoin to US Dollar', default: true },
+  { name: 'BRENTUSD', label: 'Brent Crude Oil (USD/barrel)', default: true },
   { name: 'GBPUSD', label: 'British Pound to US Dollar', default: false },
   { name: 'JPYUSD', label: 'Japanese Yen to US Dollar', default: false },
   { name: 'AUDUSD', label: 'Australian Dollar to US Dollar', default: false },
