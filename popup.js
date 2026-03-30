@@ -60,15 +60,18 @@ document.getElementById('refreshBtn').addEventListener('click', () => {
   const btn = document.getElementById('refreshBtn');
   btn.disabled = true;
   btn.textContent = 'Fetching...';
-  
-  // Send message to background script to fetch immediately
-  chrome.runtime.sendMessage({ action: 'fetchQuotes' }, () => {
-    // Wait a moment for data to be saved, then refresh display
-    setTimeout(() => {
+
+  chrome.runtime.sendMessage({ action: 'fetchQuotes' }, (response) => {
+    if (chrome.runtime.lastError) {
+      console.error('Refresh failed:', chrome.runtime.lastError.message);
+    } else if (response?.success) {
       displayQuotes();
-      btn.disabled = false;
-      btn.textContent = 'Refresh Now';
-    }, 500);
+    } else {
+      console.error('Refresh failed:', response?.error || 'Unknown error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Refresh Now';
   });
 });
 

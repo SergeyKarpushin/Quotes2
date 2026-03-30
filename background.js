@@ -24,13 +24,10 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 // Fetch quotes from exchangerate-api.com
 async function fetchQuotes() {
   try {
-    // Get selected currencies from storage
     const result = await chrome.storage.sync.get(['selectedCurrencies']);
-    let selectedCurrencies = result.selectedCurrencies || DEFAULT_CURRENCIES;
-    
+    const selectedCurrencies = result.selectedCurrencies || DEFAULT_CURRENCIES;
     const quotes = {};
-    
-    // Helper function to convert currency pair to API calls
+
     async function getRate(from, to) {
       try {
         const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
@@ -43,7 +40,6 @@ async function fetchQuotes() {
       }
     }
 
-    // Map each selected currency to its fetch logic
     for (const pair of selectedCurrencies) {
       if (pair === 'EURUSD') {
         const rate = await getRate('EUR', 'USD');
@@ -72,19 +68,19 @@ async function fetchQuotes() {
       }
     }
 
-    // Save to storage with timestamp
     const data = {
-      quotes: quotes,
+      quotes,
       timestamp: Date.now()
     };
-    
-    chrome.storage.local.set(data, () => {
-      console.log('Quotes saved:', data);
-      updateBadge(quotes);
-    });
 
+    await chrome.storage.local.set(data);
+    console.log('Quotes saved:', data);
+    updateBadge(quotes);
+
+    return { success: true, quotes, timestamp: data.timestamp };
   } catch (error) {
     console.error('Error fetching quotes:', error);
+    return { success: false, error: error.message };
   }
 }
 
@@ -107,19 +103,23 @@ function updateBadge(quotes) {
     const eurusdValue = quotes['EURUSD'].toFixed(4);
     chrome.action.setBadgeText({ text: eurusdValue });
     chrome.action.setBadgeBackgroundColor({ color: '#4CAF50' });
+  } else {
+    chrome.action.setBadgeText({ text: '' });
   }
 }
 
 // Handle messages from popup and options
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'fetchQuotes') {
-    fetchQuotes();
-    sendResponse({ status: 'fetching' });
-  } else if (request.action === 'settingsChanged') {
-    // Refresh quotes immediately when settings change
-    fetchQuotes();
-    sendResponse({ status: 'fetching' });
+  if (request.action === 'fetchQuotes' || request.action === 'settingsChanged') {
+    (async () => {
+      const result = await fetchQuotes();
+      sendResponse(result);
+    })();
+
+    return true;
   }
+
+  return false;
 });
 
 // Fetch quotes when extension loads (if data exists)
