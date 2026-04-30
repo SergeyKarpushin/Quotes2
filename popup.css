@@ -54,7 +54,7 @@ h1 {
   font-weight: 600;
   color: #667eea;
   font-size: 14px;
-  min-width: 80px;
+  white-space: nowrap;
 }
 
 .quote-value {
@@ -63,6 +63,28 @@ h1 {
   color: #333;
   text-align: right;
   min-width: 120px;
+}
+
+.quote-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.sparkline-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.sparkline {
+  width: 100px;
+  height: 24px;
+}
+
+.sparkline-placeholder {
+  color: #999;
+  font-size: 12px;
 }
 
 .loading {

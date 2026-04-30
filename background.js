@@ -27,6 +27,7 @@ async function fetchQuotes() {
     const result = await chrome.storage.sync.get(['selectedCurrencies']);
     const selectedCurrencies = result.selectedCurrencies || DEFAULT_CURRENCIES;
     const quotes = {};
+    const historical = {};
 
     async function getRate(from, to) {
       try {
@@ -40,7 +41,7 @@ async function fetchQuotes() {
       }
     }
 
-    for (const pair of selectedCurrencies) {
+    const quotePromises = selectedCurrencies.map(async (pair) => {
       if (pair === 'EURUSD') {
         const rate = await getRate('EUR', 'USD');
         if (rate) quotes[pair] = rate;
@@ -69,10 +70,22 @@ async function fetchQuotes() {
         const rate = await getRate('AUD', 'USD');
         if (rate) quotes[pair] = rate;
       }
-    }
+    });
+
+    await Promise.all(quotePromises);
+
+    const historyPromises = selectedCurrencies.map(async (pair) => {
+      const values = await fetchHistoricalData(pair);
+      if (values?.length) {
+        historical[pair] = values;
+      }
+    });
+
+    await Promise.all(historyPromises);
 
     const data = {
       quotes,
+      historical,
       timestamp: Date.now()
     };
 
@@ -80,10 +93,65 @@ async function fetchQuotes() {
     console.log('Quotes saved:', data);
     updateBadge(quotes);
 
-    return { success: true, quotes, timestamp: data.timestamp };
+    return { success: true, quotes, historical, timestamp: data.timestamp };
   } catch (error) {
     console.error('Error fetching quotes:', error);
     return { success: false, error: error.message };
+  }
+}
+
+async function fetchHistoricalData(pair) {
+  const endDate = new Date();
+  const startDate = new Date(endDate);
+  startDate.setDate(startDate.getDate() - 30);
+  const startStr = startDate.toISOString().slice(0, 10);
+  const endStr = endDate.toISOString().slice(0, 10);
+
+  try {
+    if (pair === 'BTCUSD') {
+      const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      const prices = data.prices || [];
+      return prices
+        .map((item) => ({
+          date: new Date(item[0]).toISOString().slice(0, 10),
+          base: 'BTC',
+          quote: 'USD',
+          rate: item[1]
+        }))
+        .filter((entry) => entry.rate != null);
+    }
+
+    if (pair === 'BRENTUSD') {
+      const response = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/BZ=F?range=1mo&interval=1d');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      const result = data.chart?.result?.[0];
+      const timestamps = result?.timestamp || [];
+      const closes = result?.indicators?.quote?.[0]?.close || [];
+      return timestamps
+        .map((ts, index) => ({
+          date: new Date(ts * 1000).toISOString().slice(0, 10),
+          base: 'BRENT',
+          quote: 'USD',
+          rate: closes[index]
+        }))
+        .filter((entry) => entry.rate != null);
+    }
+
+    const base = pair.slice(0, 3);
+    const quote = pair.slice(3);
+    const url = `https://api.frankfurter.dev/v2/rates?base=${base}&quotes=${quote}&from=${startStr}&to=${endStr}`;
+    console.log(`Fetching historical data for ${pair} from ${url}`);
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    return await response.json();;
+
+  } catch (error) {
+    console.error(`Error fetching history for ${pair}:`, error);
+    return null;
   }
 }
 
