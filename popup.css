@@ -5,7 +5,7 @@
 }
 
 body {
-  width: 400px;
+  width: 620px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #333;
@@ -31,8 +31,8 @@ h1 {
 }
 
 .quote-item {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(90px, 120px) minmax(100px, 120px) minmax(40px, 60px) repeat(4, minmax(80px, auto));
   align-items: center;
   padding: 12px 0;
   border-bottom: 1px solid #e0e0e0;
@@ -57,22 +57,71 @@ h1 {
   white-space: nowrap;
 }
 
-.quote-value {
-  font-size: 16px;
+.chart-details {
+  display: contents;
+}
+
+.chart-detail {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  background: #f0f4ff;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.chart-detail-label {
+  font-size: 9px;
   font-weight: 700;
-  color: #333;
-  text-align: right;
-  min-width: 120px;
+  color: #444;
+  text-transform: uppercase;
 }
 
-.quote-left {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
+.chart-detail-value {
+  font-size: 11px;
+  font-weight: 700;
+  color: #222;
 }
 
-.sparkline-wrapper {
+.chart-detail-open {
+  background: #e3f0ff;
+  color: #1155cc;
+}
+
+.chart-detail-open .chart-detail-value {
+  color: #1155cc;
+}
+
+.chart-detail-low {
+  background: #fde8e9;
+  color: #b12f35;
+}
+
+.chart-detail-low .chart-detail-value {
+  color: #b12f35;
+}
+
+.chart-detail-high {
+  background: #e4f9e9;
+  color: #1a7b2f;
+}
+
+.chart-detail-high .chart-detail-value {
+  color: #1a7b2f;
+}
+
+.chart-detail-close {
+  background: linear-gradient(135deg, #5b9bff 0%, #ff88c9 100%);
+  color: white;
+}
+
+.chart-detail-close .chart-detail-value,
+.chart-detail-close .chart-detail-label {
+  color: white;
+}
+
+.sparkline-wrapper,
+.candlestick-wrapper {
   display: flex;
   align-items: center;
 }
@@ -82,7 +131,13 @@ h1 {
   height: 24px;
 }
 
-.sparkline-placeholder {
+.candlestick {
+  width: 40px;
+  height: 28px;
+}
+
+.sparkline-placeholder,
+.chart-placeholder {
   color: #999;
   font-size: 12px;
 }
