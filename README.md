@@ -1,12 +1,14 @@
 # Forex Quotes Chrome Extension
 
-A lightweight Chrome extension that fetches live forex exchange rates daily and displays them in a popup with the EURUSD value on the icon.
+A lightweight Chrome extension that fetches live forex exchange rates daily and displays a compact, data-rich popup with exchange details and a badge for EURUSD.
 
 ## Features
 
 - **Daily Auto-Updates**: Fetches currency quotes once per day automatically
 - **Icon Badge**: Shows EURUSD exchange rate on the extension icon
-- **Quick Popup**: Click the icon to view all tracked currencies
+- **Historical View**: Includes a 30-day sparkline for each tracked pair
+- **Monthly Candle Summary**: Displays Open / Low / High / Close values for the last month
+- **Quick Popup**: Click the icon to view all tracked currencies and chart data
 - **Configurable Currencies**: Choose which currencies to track via settings page
 - **Manual Refresh**: Button to refresh quotes on demand
 - **Timestamps**: Shows when quotes were last updated
@@ -14,11 +16,11 @@ A lightweight Chrome extension that fetches live forex exchange rates daily and 
 ## Files Structure
 
 ```
-Quotes/
+Quotes2/
 ├── manifest.json       # Extension configuration
-├── background.js       # Fetches quotes daily
+├── background.js       # Fetches quotes daily and historical data
 ├── popup.html          # Popup UI
-├── popup.js            # Popup logic
+├── popup.js            # Popup logic and chart rendering
 ├── popup.css           # Popup styling
 ├── options.html        # Settings page
 ├── options.js          # Settings logic
@@ -34,36 +36,41 @@ Quotes/
 
 - **Forex Rates**: [ExchangeRate-API](https://www.exchangerate-api.com/) - Free tier (1500 requests/month)
 - **Bitcoin Price**: [CoinGecko API](https://www.coingecko.com/en/api) - Free, no authentication required
+- **Brent Oil History**: Yahoo Finance quote API
 
 ## Installation
 
 1. Open Chrome and navigate to `chrome://extensions/`
 2. Enable "Developer mode" (toggle in top right)
 3. Click "Load unpacked"
-4. Select the `Quotes` folder
+4. Select the `Quotes2` folder
 5. The extension icon will appear in your Chrome toolbar!
 
 ## Usage
 
 1. **View Quotes**: Click the extension icon to open the popup
-2. **Refresh**: Click "Refresh Now" to manually fetch updated quotes
-3. **Icon Badge**: Check the extension icon badge for the current EURUSD rate
+2. **Inspect History**: Each pair shows a 30-day sparkline and monthly candle summary
+3. **Refresh**: Click "Refresh Now" to manually fetch updated quotes
+4. **Settings**: Click the ⚙️ Settings button to customize tracked currencies
 
 ## How it Works
 
 - **Automatic Updates**: Extension sets a 24-hour alarm to fetch quotes daily
-- **First Load**: Quotes are fetched immediately when extension is installed
-- **Storage**: Quotes are stored in Chrome's local storage with timestamps
-- **Badge**: The EURUSD value is always displayed on the extension icon
+- **First Load**: Quotes are fetched immediately when the extension is installed
+- **Historical Data**: Popup charts use the latest 30 days of pricing history
+- **Monthly Summary**: Open/Low/High/Close values are calculated from the same monthly dataset
+- **Storage**: Quotes and history are stored in Chrome local storage with timestamps
+- **Badge**: The EURUSD value is displayed on the extension icon
 
 ## Available Currencies
 
-By default, the extension tracks these 5 currency pairs:
+By default, the extension tracks these currency pairs:
 - **EURUSD** - Euro to US Dollar
 - **EURRUB** - Euro to Russian Ruble
 - **USDRUB** - US Dollar to Russian Ruble
 - **CADRUB** - Canadian Dollar to Russian Ruble
 - **BTCUSD** - Bitcoin to US Dollar
+- **BRENTUSD** - Brent Crude Oil to US Dollar
 
 Additional currencies available to enable in settings:
 - **GBPUSD** - British Pound to US Dollar
@@ -83,6 +90,7 @@ Additional currencies available to enable in settings:
 - `alarms`: To schedule daily updates
 - `https://api.exchangerate-api.com/*`: To fetch forex rates
 - `https://api.coingecko.com/*`: To fetch Bitcoin price
+- `https://query1.finance.yahoo.com/*`: To fetch Brent historical data
 
 ## Notes
 
@@ -99,4 +107,4 @@ Additional currencies available to enable in settings:
 
 ## License
 
-Free to use and modify personal use.
+Free to use and modify for personal use.
