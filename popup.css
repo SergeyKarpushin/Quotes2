@@ -30,16 +30,29 @@ h1 {
   margin-bottom: 20px;
 }
 
+.quote-header,
 .quote-item {
   display: grid;
-  grid-template-columns: minmax(90px, 120px) minmax(100px, 120px) minmax(40px, 60px) repeat(4, minmax(80px, auto));
+  grid-template-columns: minmax(90px, 120px) minmax(100px, 220px) minmax(40px, 88px) repeat(4, minmax(80px, auto));
   align-items: center;
   padding: 12px 0;
   border-bottom: 1px solid #e0e0e0;
+}
+
+.quote-header {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #555;
+  justify-items: center;
+}
+
+.quote-item {
   transition: background-color 0.2s;
 }
 
-.quote-item:last-child {
+.quote-item:last-child,
+.quote-header:last-child {
   border-bottom: none;
 }
 
@@ -55,6 +68,32 @@ h1 {
   color: #667eea;
   font-size: 14px;
   white-space: nowrap;
+}
+
+.month-column {
+  display: flex;
+  justify-content: center;
+}
+
+.candlestick-column {
+  display: flex;
+  justify-content: center;
+}
+
+.quote-value,
+.chart-value {
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+}
+
+.chart-value {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 8px;
+  border-radius: 10px;
 }
 
 .chart-details {

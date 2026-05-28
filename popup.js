@@ -113,7 +113,18 @@ function displayQuotes() {
       const selectedCurrencies = syncResult.selectedCurrencies || ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD', 'BRENTUSD'];
 
       if (result.quotes && Object.keys(result.quotes).length > 0) {
-        let html = '';
+        const currentMonthName = new Date().toLocaleString('default', { month: 'long' });
+        let html = `
+          <div class="quote-header">
+            <span>Symbol</span>
+            <span>Month (${currentMonthName})</span>
+            <span></span>
+            <span>Open</span>
+            <span>Low</span>
+            <span>High</span>
+            <span>Close</span>
+          </div>
+        `;
 
         for (const pair of selectedCurrencies) {
           if (result.quotes[pair]) {
@@ -121,19 +132,22 @@ function displayQuotes() {
             const sparkline = history ? createSparkline(history) : '<span class="sparkline-placeholder">Loading history…</span>';
             const candlestick = history ? createCandlestickBar(history) : '<span class="chart-placeholder">Loading candle…</span>';
             const stats = history ? getMonthlyCandleStats(history) : null;
-            const chartDetails = stats ? `
-              <span class="chart-detail chart-detail-open"><span class="chart-detail-label">Open</span><span class="chart-detail-value">${formatChartValue(pair, stats.open)}</span></span>
-              <span class="chart-detail chart-detail-low"><span class="chart-detail-label">Low</span><span class="chart-detail-value">${formatChartValue(pair, stats.low)}</span></span>
-              <span class="chart-detail chart-detail-high"><span class="chart-detail-label">High</span><span class="chart-detail-value">${formatChartValue(pair, stats.high)}</span></span>
-              <span class="chart-detail chart-detail-close"><span class="chart-detail-label">Close</span><span class="chart-detail-value">${formatChartValue(pair, stats.close)}</span></span>
-            ` : '<span class="chart-placeholder">Loading values…</span>';
+            const openValue = stats ? formatChartValue(pair, stats.open) : '–';
+            const lowValue = stats ? formatChartValue(pair, stats.low) : '–';
+            const highValue = stats ? formatChartValue(pair, stats.high) : '–';
+            const closeValue = stats ? formatChartValue(pair, stats.close) : '–';
 
             html += `
               <div class="quote-item">
                 <span class="quote-pair">${pair}</span>
-                <span class="sparkline-wrapper">${sparkline}</span>
-                <span class="candlestick-wrapper">${candlestick}</span>
-                ${chartDetails}
+                <span class="month-column">
+                  ${sparkline}
+                </span>
+                <span class="candlestick-column">${candlestick}</span>
+                <span class="chart-value chart-detail chart-detail-open">${openValue}</span>
+                <span class="chart-value chart-detail chart-detail-low">${lowValue}</span>
+                <span class="chart-value chart-detail chart-detail-high">${highValue}</span>
+                <span class="chart-value chart-detail chart-detail-close">${closeValue}</span>
               </div>
             `;
           }
