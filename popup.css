@@ -47,6 +47,11 @@ h1 {
   justify-items: center;
 }
 
+.quote-header > span:first-child,
+.quote-item > .quote-pair {
+  justify-self: start;
+}
+
 .quote-item {
   transition: background-color 0.2s;
 }
