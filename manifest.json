@@ -10,7 +10,7 @@
   ],
   "host_permissions": [
     "https://api.exchangerate-api.com/*",
-    "https://api.frankfurter.app/*",
+    "https://api.frankfurter.dev/*",
     "https://api.coingecko.com/*",
     "https://query1.finance.yahoo.com/*"
   ],

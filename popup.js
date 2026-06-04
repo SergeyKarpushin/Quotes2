@@ -112,7 +112,7 @@ function displayQuotes() {
       const timestampEl = document.getElementById('timestamp');
       const selectedCurrencies = syncResult.selectedCurrencies || ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD', 'BRENTUSD'];
 
-      if (result.quotes && Object.keys(result.quotes).length > 0) {
+      if (selectedCurrencies.length > 0) {
         const currentMonthName = new Date().toLocaleString('default', { month: 'long' });
         let html = `
           <div class="quote-header">
@@ -127,45 +127,58 @@ function displayQuotes() {
         `;
 
         for (const pair of selectedCurrencies) {
-          if (result.quotes[pair]) {
-            const history = result.historical?.[pair];
-            const sparkline = history ? createSparkline(history) : '<span class="sparkline-placeholder">Loading history…</span>';
-            const candlestick = history ? createCandlestickBar(history) : '<span class="chart-placeholder">Loading candle…</span>';
-            const stats = history ? getMonthlyCandleStats(history) : null;
-            const openValue = stats ? formatChartValue(pair, stats.open) : '–';
-            const lowValue = stats ? formatChartValue(pair, stats.low) : '–';
-            const highValue = stats ? formatChartValue(pair, stats.high) : '–';
-            const closeValue = stats ? formatChartValue(pair, stats.close) : '–';
+          const quote = result.quotes?.[pair];
 
+          // Always show every tracked symbol. If its rate hasn't been
+          // fetched yet, render a pending row instead of dropping it.
+          if (quote == null) {
             html += `
-              <div class="quote-item">
+              <div class="quote-item quote-item-pending">
                 <span class="quote-pair">${pair}</span>
-                <span class="month-column">
-                  ${sparkline}
-                </span>
-                <span class="candlestick-column">${candlestick}</span>
-                <span class="chart-value chart-detail chart-detail-open">${openValue}</span>
-                <span class="chart-value chart-detail chart-detail-low">${lowValue}</span>
-                <span class="chart-value chart-detail chart-detail-high">${highValue}</span>
-                <span class="chart-value chart-detail chart-detail-close">${closeValue}</span>
+                <span class="month-column"><span class="sparkline-placeholder">Fetching…</span></span>
+                <span class="candlestick-column"><span class="chart-placeholder">—</span></span>
+                <span class="chart-value chart-detail chart-detail-open">–</span>
+                <span class="chart-value chart-detail chart-detail-low">–</span>
+                <span class="chart-value chart-detail chart-detail-high">–</span>
+                <span class="chart-value chart-detail chart-detail-close">–</span>
               </div>
             `;
+            continue;
           }
+
+          const history = result.historical?.[pair];
+          const sparkline = history ? createSparkline(history) : '<span class="sparkline-placeholder">Loading history…</span>';
+          const candlestick = history ? createCandlestickBar(history) : '<span class="chart-placeholder">Loading candle…</span>';
+          const stats = history ? getMonthlyCandleStats(history) : null;
+          const openValue = stats ? formatChartValue(pair, stats.open) : '–';
+          const lowValue = stats ? formatChartValue(pair, stats.low) : '–';
+          const highValue = stats ? formatChartValue(pair, stats.high) : '–';
+          const closeValue = stats ? formatChartValue(pair, stats.close) : '–';
+
+          html += `
+            <div class="quote-item">
+              <span class="quote-pair">${pair}</span>
+              <span class="month-column">
+                ${sparkline}
+              </span>
+              <span class="candlestick-column">${candlestick}</span>
+              <span class="chart-value chart-detail chart-detail-open">${openValue}</span>
+              <span class="chart-value chart-detail chart-detail-low">${lowValue}</span>
+              <span class="chart-value chart-detail chart-detail-high">${highValue}</span>
+              <span class="chart-value chart-detail chart-detail-close">${closeValue}</span>
+            </div>
+          `;
         }
 
-        if (html) {
-          quotesList.innerHTML = html;
+        quotesList.innerHTML = html;
 
-          document.querySelectorAll('.quote-pair').forEach(el => {
-            el.style.cursor = 'pointer';
-            el.addEventListener('click', () => {
-              const pair = el.textContent;
-              chrome.tabs.create({ url: getDetailsUrl(pair) });
-            });
+        document.querySelectorAll('.quote-pair').forEach(el => {
+          el.style.cursor = 'pointer';
+          el.addEventListener('click', () => {
+            const pair = el.textContent;
+            chrome.tabs.create({ url: getDetailsUrl(pair) });
           });
-        } else {
-          quotesList.innerHTML = '<p class="error">No quotes available. Click Refresh to fetch.</p>';
-        }
+        });
 
         // Update timestamp
         if (result.timestamp) {
@@ -175,7 +188,7 @@ function displayQuotes() {
           timestampEl.textContent = `Last updated: ${dateStr} ${timeStr}`;
         }
       } else {
-        quotesList.innerHTML = '<p class="loading">No data available. Click Refresh to fetch.</p>';
+        quotesList.innerHTML = '<p class="loading">No symbols selected. Open Settings to add some.</p>';
       }
     });
   });

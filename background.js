@@ -42,34 +42,20 @@ async function fetchQuotes() {
     }
 
     const quotePromises = selectedCurrencies.map(async (pair) => {
-      if (pair === 'EURUSD') {
-        const rate = await getRate('EUR', 'USD');
-        if (rate) quotes[pair] = rate;
-      } else if (pair === 'EURRUB') {
-        const rate = await getRate('EUR', 'RUB');
-        if (rate) quotes[pair] = rate;
-      } else if (pair === 'USDRUB') {
-        const rate = await getRate('USD', 'RUB');
-        if (rate) quotes[pair] = rate;
-      } else if (pair === 'CADRUB') {
-        const rate = await getRate('CAD', 'RUB');
-        if (rate) quotes[pair] = rate;
-      } else if (pair === 'BTCUSD') {
-        const rate = await fetchBitcoinPrice();
-        if (rate) quotes[pair] = rate;
+      let rate = null;
+
+      if (pair === 'BTCUSD') {
+        rate = await fetchBitcoinPrice();
       } else if (pair === 'BRENTUSD') {
-        const rate = await fetchBrentOilPrice();
-        if (rate) quotes[pair] = rate;
-      } else if (pair === 'GBPUSD') {
-        const rate = await getRate('GBP', 'USD');
-        if (rate) quotes[pair] = rate;
-      } else if (pair === 'JPYUSD') {
-        const rate = await getRate('JPY', 'USD');
-        if (rate) quotes[pair] = rate;
-      } else if (pair === 'AUDUSD') {
-        const rate = await getRate('AUD', 'USD');
-        if (rate) quotes[pair] = rate;
+        rate = await fetchBrentOilPrice();
+      } else if (/^[A-Za-z]{6}$/.test(pair)) {
+        // Generic forex pair: first 3 chars are the base, last 3 the quote.
+        rate = await getRate(pair.slice(0, 3), pair.slice(3));
+      } else {
+        console.warn(`Unrecognized symbol, skipping: ${pair}`);
       }
+
+      if (rate) quotes[pair] = rate;
     });
 
     await Promise.all(quotePromises);

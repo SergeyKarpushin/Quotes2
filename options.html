@@ -12,8 +12,13 @@
     
     <section class="settings-section">
       <h2>Select Currencies to Track</h2>
-      <p class="section-description">Choose which currency pairs you want to monitor:</p>
-      
+      <p class="section-description">Search the known symbols below to add new pairs, or uncheck a tracked symbol to remove it.</p>
+
+      <div class="symbol-search">
+        <input type="text" id="symbolSearch" class="symbol-search-input" placeholder="Search symbols (e.g. GBP, Yen, USDJPY)…" autocomplete="off">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+
       <div class="currencies-grid" id="currenciesGrid">
         <!-- Currency checkboxes will be generated here -->
       </div>
