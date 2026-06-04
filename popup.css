@@ -54,6 +54,17 @@ h1 {
 
 .quote-item {
   transition: background-color 0.2s;
+  cursor: grab;
+}
+
+.quote-item:active {
+  cursor: grabbing;
+}
+
+.quote-item.dragging {
+  opacity: 0.4;
+  background-color: #eef0ff;
+  border-radius: 4px;
 }
 
 .quote-item:last-child,

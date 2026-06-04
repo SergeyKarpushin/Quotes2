@@ -104,6 +104,71 @@ function formatChartValue(pair, value) {
   return formatQuoteValue(pair, value);
 }
 
+// --- Drag-and-drop reordering of symbols ---
+let draggedRow = null;
+
+// Find the row that the dragged item should be inserted before, based on the
+// pointer's vertical position; returns null when it belongs at the end.
+function getDragAfterRow(container, y) {
+  const rows = [...container.querySelectorAll('.quote-item:not(.dragging)')];
+  let closest = { offset: Number.NEGATIVE_INFINITY, element: null };
+  for (const row of rows) {
+    const box = row.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      closest = { offset, element: row };
+    }
+  }
+  return closest.element;
+}
+
+// Persist the current DOM order of symbols back to storage so it sticks.
+function persistSymbolOrder(container) {
+  const order = [...container.querySelectorAll('.quote-item')].map((row) => row.dataset.pair);
+  if (order.length) {
+    chrome.storage.sync.set({ selectedCurrencies: order });
+  }
+}
+
+function enableDragReorder(quotesList) {
+  quotesList.querySelectorAll('.quote-item').forEach((row) => {
+    row.addEventListener('dragstart', (event) => {
+      draggedRow = row;
+      row.classList.add('dragging');
+      event.dataTransfer.effectAllowed = 'move';
+      try {
+        event.dataTransfer.setData('text/plain', row.dataset.pair);
+      } catch (_) {
+        // Some browsers require setData; ignore if it throws.
+      }
+    });
+
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      draggedRow = null;
+      persistSymbolOrder(quotesList);
+    });
+  });
+
+  // Bind the container-level dragover only once, even across re-renders.
+  if (quotesList.dataset.dragBound === 'true') return;
+  quotesList.dataset.dragBound = 'true';
+
+  quotesList.addEventListener('dragover', (event) => {
+    if (!draggedRow) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    const afterRow = getDragAfterRow(quotesList, event.clientY);
+    if (afterRow == null) {
+      quotesList.appendChild(draggedRow);
+    } else if (afterRow !== draggedRow) {
+      quotesList.insertBefore(draggedRow, afterRow);
+    }
+  });
+
+  quotesList.addEventListener('drop', (event) => event.preventDefault());
+}
+
 // Display quotes in popup
 function displayQuotes() {
   chrome.storage.local.get(['quotes', 'timestamp', 'historical'], (result) => {
@@ -133,7 +198,7 @@ function displayQuotes() {
           // fetched yet, render a pending row instead of dropping it.
           if (quote == null) {
             html += `
-              <div class="quote-item quote-item-pending">
+              <div class="quote-item quote-item-pending" draggable="true" data-pair="${pair}">
                 <span class="quote-pair">${pair}</span>
                 <span class="month-column"><span class="sparkline-placeholder">Fetching…</span></span>
                 <span class="candlestick-column"><span class="chart-placeholder">—</span></span>
@@ -156,7 +221,7 @@ function displayQuotes() {
           const closeValue = stats ? formatChartValue(pair, stats.close) : '–';
 
           html += `
-            <div class="quote-item">
+            <div class="quote-item" draggable="true" data-pair="${pair}">
               <span class="quote-pair">${pair}</span>
               <span class="month-column">
                 ${sparkline}
@@ -179,6 +244,8 @@ function displayQuotes() {
             chrome.tabs.create({ url: getDetailsUrl(pair) });
           });
         });
+
+        enableDragReorder(quotesList);
 
         // Update timestamp
         if (result.timestamp) {
