@@ -221,6 +221,12 @@ h1 {
   gap: 10px;
 }
 
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .refresh-btn {
   background-color: #667eea;
   color: white;
@@ -231,14 +237,7 @@ h1 {
   font-size: 14px;
   font-weight: 600;
   transition: background-color 0.3s;
-}
-
-.refresh-btn:hover {
-  background-color: #764ba2;
-}
-
-.refresh-btn:active {
-  transform: scale(0.98);
+  flex: 1;
 }
 
 .settings-link {
@@ -249,6 +248,18 @@ h1 {
   transition: color 0.3s;
   padding: 6px 12px;
   border-radius: 4px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.refresh-btn:hover {
+  background-color: #764ba2;
+}
+
+.refresh-btn:active {
+  transform: scale(0.98);
 }
 
 .settings-link:hover {

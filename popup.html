@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forex Quotes</title>
+  <title>Currencies and Commodities</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="container">
-    <h1>Forex Exchange Rates</h1>
+    <h1>Currencies and Commodities</h1>
     
     <div class="quotes-list" id="quotesList">
       <p class="loading">Loading quotes...</p>
     </div>
     
     <div class="footer">
-      <button id="refreshBtn" class="refresh-btn">Refresh Now</button>
-      <a id="settingsLink" class="settings-link" href="options.html" target="_blank">⚙️ Settings</a>
+      <div class="footer-actions">
+        <button id="refreshBtn" class="refresh-btn">Refresh Now</button>
+        <a id="settingsLink" class="settings-link" href="options.html" target="_blank">⚙️ Settings</a>
+      </div>
       <p class="timestamp" id="timestamp"></p>
     </div>
   </div>
