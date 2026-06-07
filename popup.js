@@ -178,40 +178,42 @@ function displayQuotes() {
       const selectedCurrencies = syncResult.selectedCurrencies || ['EURUSD', 'EURRUB', 'USDRUB', 'CADRUB', 'BTCUSD', 'BRENTUSD'];
 
       if (selectedCurrencies.length > 0) {
+        
         const currentMonthName = new Date().toLocaleString('default', { month: 'long' });
         let html = `
-          <div class="quote-header">
-            <span>Symbol</span>
-            <span>Month (${currentMonthName})</span>
-            <span></span>
-            <span>Open</span>
-            <span>Low</span>
-            <span>High</span>
-            <span>Close</span>
-          </div>
+        <div class="quote-header">
+        <span>Symbol</span>
+        <span>Month (${currentMonthName})</span>
+        <span></span>
+        <span>Open</span>
+        <span>Low</span>
+        <span>High</span>
+        <span>Close</span>
+        </div>
         `;
-
+        
         for (const pair of selectedCurrencies) {
           const quote = result.quotes?.[pair];
-
+          
           // Always show every tracked symbol. If its rate hasn't been
           // fetched yet, render a pending row instead of dropping it.
           if (quote == null) {
             html += `
-              <div class="quote-item quote-item-pending" draggable="true" data-pair="${pair}">
-                <span class="quote-pair">${pair}</span>
-                <span class="month-column"><span class="sparkline-placeholder">Fetching…</span></span>
-                <span class="candlestick-column"><span class="chart-placeholder">—</span></span>
-                <span class="chart-value chart-detail chart-detail-open">–</span>
-                <span class="chart-value chart-detail chart-detail-low">–</span>
-                <span class="chart-value chart-detail chart-detail-high">–</span>
-                <span class="chart-value chart-detail chart-detail-close">–</span>
-              </div>
+            <div class="quote-item quote-item-pending" draggable="true" data-pair="${pair}">
+            <span class="quote-pair">${pair}</span>
+            <span class="month-column"><span class="sparkline-placeholder">Fetching…</span></span>
+            <span class="candlestick-column"><span class="chart-placeholder">—</span></span>
+            <span class="chart-value chart-detail chart-detail-open">–</span>
+            <span class="chart-value chart-detail chart-detail-low">–</span>
+            <span class="chart-value chart-detail chart-detail-high">–</span>
+            <span class="chart-value chart-detail chart-detail-close">–</span>
+            </div>
             `;
             continue;
           }
-
+          
           const history = result.historical?.[pair];
+          const value = formatQuoteValue(pair, result.quotes[pair]);
           const sparkline = history ? createSparkline(history) : '<span class="sparkline-placeholder">Loading history…</span>';
           const candlestick = history ? createCandlestickBar(history) : '<span class="chart-placeholder">Loading candle…</span>';
           const stats = history ? getMonthlyCandleStats(history) : null;
@@ -230,7 +232,7 @@ function displayQuotes() {
               <span class="chart-value chart-detail chart-detail-open">${openValue}</span>
               <span class="chart-value chart-detail chart-detail-low">${lowValue}</span>
               <span class="chart-value chart-detail chart-detail-high">${highValue}</span>
-              <span class="chart-value chart-detail chart-detail-close">${closeValue}</span>
+              <span class="chart-value chart-detail chart-detail-close">${value}</span>
             </div>
           `;
         }
