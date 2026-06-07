@@ -194,28 +194,11 @@ function displayQuotes() {
         
         for (const pair of selectedCurrencies) {
           const quote = result.quotes?.[pair];
-          
-          // Always show every tracked symbol. If its rate hasn't been
-          // fetched yet, render a pending row instead of dropping it.
-          if (quote == null) {
-            html += `
-            <div class="quote-item quote-item-pending" draggable="true" data-pair="${pair}">
-            <span class="quote-pair">${pair}</span>
-            <span class="month-column"><span class="sparkline-placeholder">Fetching…</span></span>
-            <span class="candlestick-column"><span class="chart-placeholder">—</span></span>
-            <span class="chart-value chart-detail chart-detail-open">–</span>
-            <span class="chart-value chart-detail chart-detail-low">–</span>
-            <span class="chart-value chart-detail chart-detail-high">–</span>
-            <span class="chart-value chart-detail chart-detail-close">–</span>
-            </div>
-            `;
-            continue;
-          }
-          
+                
           const history = result.historical?.[pair];
           const value = formatQuoteValue(pair, result.quotes[pair]);
-          const sparkline = history ? createSparkline(history) : '<span class="sparkline-placeholder">Loading history…</span>';
-          const candlestick = history ? createCandlestickBar(history) : '<span class="chart-placeholder">Loading candle…</span>';
+          const sparkline = history ? createSparkline(history) : '<span class="sparkline-placeholder">Fetching…</span>';
+          const candlestick = history ? createCandlestickBar(history) : '—';
           const stats = history ? getMonthlyCandleStats(history) : null;
           const openValue = stats ? formatChartValue(pair, stats.open) : '–';
           const lowValue = stats ? formatChartValue(pair, stats.low) : '–';
